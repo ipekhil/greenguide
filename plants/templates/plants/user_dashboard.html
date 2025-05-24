@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'plants/base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Welcome, {{ user.username }}!</h2>
+    <p>This is your personal plant dashboard.</p>
+    <p>is_staff: {{ user.is_staff }}</p>  <!-- bunu geçici olarak eklersen testte admin olup olmadığını görürüz -->
+  </div>
+{% endblock %}
+
+
+</body>
+</html>

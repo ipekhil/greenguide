@@ -1,0 +1,13 @@
+# Django / Python speical
+*.pyc
+__pycache__/
+*.log
+
+# Database
+db.sqlite3
+
+# Virtual Enviroment
+.venv/
+
+# Ortam dosyası
+.env
