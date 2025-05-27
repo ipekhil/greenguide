@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'plants/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3>🌿 All Your Plants</h3>
+  <div class="row">
+    {% for plant in plants %}
+      <div class="col-md-4 mb-4">
+        <div class="card p-3 shadow-sm">
+            <a href="{% url 'user_plant_detail' plant.pk %}">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">{{ plant.nickname }}</h5>
+                  <p class="card-text">{{ plant.plant_type.name }}</p>
+                </div>
+              </div>
+            </a>
+          <p>💧 Next Water: {{ plant.next_water_date }}</p>
+          <p>🌿 Next Fertilize: {{ plant.next_fertilize_date }}</p>
+          <div class="mt-2">
+            <a href="{% url 'delete_user_plant' plant.id %}" class="btn btn-sm btn-danger"
+               onclick="return confirm('Are you sure?')">Delete</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>You don’t have any plants yet!</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+</body>
+</html>

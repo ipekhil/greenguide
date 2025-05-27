@@ -6,15 +6,64 @@
 </head>
 <body>
 {% extends 'plants/base.html' %}
-
 {% block content %}
-  <div class="container mt-5">
-    <h2>Welcome, {{ user.username }}!</h2>
-    <p>This is your personal plant dashboard.</p>
-    <p>is_staff: {{ user.is_staff }}</p>  <!-- bunu geçici olarak eklersen testte admin olup olmadığını görürüz -->
-  </div>
-{% endblock %}
+<div class="container mt-5">
+  <div class="row">
 
+    <!-- Sol: Bitki Ekleme -->
+    <div class="col-md-4">
+      <h4>Add New Plant</h4>
+      <form method="POST" action="{% url 'add_user_plant' %}">
+        {% csrf_token %}
+        {{ plant_form.as_p }}
+        <button type="submit" class="btn btn-success mt-2">Add</button>
+      </form>
+    </div>
+
+    <!-- Sağ: Bildirimler + Bitkiler -->
+    <div class="col-md-8">
+
+      <!-- Alerts (sağ üst) -->
+      <div class="mb-4">
+        <h4>🔔 Today's Alerts</h4>
+        <div class="border p-3">
+          {% if alerts %}
+            <ul>
+              {% for alert in alerts %}
+                <li>{{ alert }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No alerts for today 💤</p>
+          {% endif %}
+          <a href="{% url 'all_alerts' %}" class="btn btn-outline-primary btn-sm mt-2">View All</a>
+        </div>
+      </div>
+
+      <!-- Plants (sağ alt) -->
+      <div>
+        <h4>🌿 My Plants</h4>
+        <div class="row">
+          {% for plant in plants|slice:":3" %}
+            <div class="col-md-4 mb-3">
+              <div class="card p-2">
+                <h5>{{ plant.nickname }}</h5>
+                <p>{{ plant.plant_type.name }}</p>
+                <p>💧 {{ plant.next_water_date }}</p>
+                <p>🌿 {{ plant.next_fertilize_date }}</p>
+              </div>
+            </div>
+          {% empty %}
+            <p>No plants added.</p>
+          {% endfor %}
+        </div>
+        <a href="{% url 'user_plants' %}" class="btn btn-outline-secondary btn-sm mt-2">View All</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
 
 </body>
 </html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'plants/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3>Edit Plant Type: {{ plant.name }}</h3>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary mt-2">Save Changes</button>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-2">Cancel</a>
+  </form>
+</div>
+{% endblock %}
+
+</body>
+</html>

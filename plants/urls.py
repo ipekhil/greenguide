@@ -14,7 +14,16 @@ urlpatterns = [
          name="logout"),
 
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("edit/<int:plant_id>/", views.edit_plant_type, name="edit_plant_type"),
 
     path("delete/<int:id>/", views.delete_plant_type, name="delete_plant_type"),
+
+    path("myplants/add/", views.add_user_plant, name="add_user_plant"),
+    path("myplants/", views.user_plants, name="user_plants"),
+    path("myplants/<int:id>/delete/", views.delete_user_plant, name="delete_user_plant"),
+
+    path("alerts/", views.all_alerts, name="all_alerts"),
+
+    path("myplants/<int:pk>/", views.user_plant_detail, name="user_plant_detail"),
 
 ]

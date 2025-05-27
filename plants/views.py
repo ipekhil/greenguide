@@ -7,6 +7,10 @@ from django.shortcuts import render
 from .forms import PlantTypeForm
 from .models import PlantType
 from django.shortcuts import get_object_or_404
+from .forms import UserPlantForm
+from .models import UserPlant
+from datetime import date
+
 
 # Create your views here.
 def register(request):
@@ -22,12 +26,8 @@ def register(request):
 
 @login_required
 def dashboard(request):
-    return render(request, "plants/admin_dashboard.html")
-
-@login_required
-def dashboard(request):
     if request.user.is_staff:
-        # admin dashboard
+        # Admin dashboard
         form = PlantTypeForm()
 
         if request.method == "POST":
@@ -44,7 +44,22 @@ def dashboard(request):
         })
 
     else:
-        return render(request, "plants/user_dashboard.html")
+        # User dashboard
+        user_plants = UserPlant.objects.filter(user=request.user)
+        today = date.today()
+        alerts = []
+
+        for plant in user_plants:
+            if plant.next_water_date() <= today:
+                alerts.append(f"💧 Water your {plant.nickname} today!")
+            if plant.next_fertilize_date() <= today:
+                alerts.append(f"🌿 Fertilize your {plant.nickname} today!")
+
+        return render(request, "plants/user_dashboard.html", {
+            "plants": user_plants,
+            "alerts": alerts,
+            "plant_form": UserPlantForm()
+        })
 
 @login_required
 def delete_plant_type(request, id):
@@ -54,3 +69,66 @@ def delete_plant_type(request, id):
     plant = get_object_or_404(PlantType, id=id)
     plant.delete()
     return redirect("dashboard")
+
+
+@login_required
+def edit_plant_type(request, plant_id):
+    plant = get_object_or_404(PlantType, id=plant_id)
+
+    if request.method == 'POST':
+        form = PlantTypeForm(request.POST, instance=plant)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = PlantTypeForm(instance=plant)
+
+    return render(request, 'plants/edit_plant_type.html', {
+        'form': form,
+        'plant': plant
+    })
+
+@login_required
+def add_user_plant(request):
+    if request.method == 'POST':
+        form = UserPlantForm(request.POST)
+        if form.is_valid():
+            user_plant = form.save(commit=False)
+            user_plant.user = request.user
+            user_plant.save()
+            return redirect('dashboard')
+    else:
+        form = UserPlantForm()
+
+    return render(request, 'plants/add_user_plant.html', {'form': form})
+
+
+@login_required
+def user_plants(request):
+    plants = UserPlant.objects.filter(user=request.user)
+    return render(request, "plants/user_plants.html", {"plants": plants})
+
+@login_required
+def all_alerts(request):
+    today = date.today()
+    user_plants = UserPlant.objects.filter(user=request.user)
+    alerts = []
+    for plant in user_plants:
+        if plant.next_water_date() <= today:
+            alerts.append(f"💧 Water your {plant.nickname} today!")
+        if plant.next_fertilize_date() <= today:
+            alerts.append(f"🌿 Fertilize your {plant.nickname} today!")
+    return render(request, "plants/alerts.html", {"alerts": alerts})
+
+@login_required
+def delete_user_plant(request, id):
+    plant = get_object_or_404(UserPlant, id=id, user=request.user)
+    plant.delete()
+    return redirect('dashboard')
+
+
+@login_required
+def user_plant_detail(request, pk):
+    plant = get_object_or_404(UserPlant, pk=pk, user=request.user)
+    return render(request, "plants/user_plant_detail.html", {"plant": plant})
+
