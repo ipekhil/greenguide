@@ -24,16 +24,17 @@ class UserPlant(models.Model):
     last_fertilized = models.DateField(default=date.today)
 
     def next_water_date(self):
-        next_date = self.last_watered
-        while next_date <= date.today():
-            next_date += timedelta(days=self.plant_type.watering_frequency)
-        return next_date
+        expected_date = self.last_watered + timedelta(days=self.plant_type.watering_frequency)
+        if expected_date <= date.today():
+            # sulama günü geldi veya geçmiş
+            return date.today()
+        return expected_date
 
     def next_fertilize_date(self):
-        next_date = self.last_fertilized
-        while next_date <= date.today():
-            next_date += timedelta(days=self.plant_type.fertilizing_frequency)
-        return next_date
+        expected_date = self.last_fertilized + timedelta(days=self.plant_type.fertilizing_frequency)
+        if expected_date <= date.today():
+            return date.today()
+        return expected_date
 
     def __str__(self):
         return f"{self.nickname} ({self.plant_type.name})"

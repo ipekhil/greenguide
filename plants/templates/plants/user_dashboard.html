@@ -1,69 +1,235 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
 {% extends 'plants/base.html' %}
+{% load static %}
+
 {% block content %}
-<div class="container mt-5">
-  <div class="row">
+<style>
+.submit-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 
-    <!-- Sol: Bitki Ekleme -->
-    <div class="col-md-4">
-      <h4>Add New Plant</h4>
+
+  body {
+    background: url("{% static 'images/green-leaves.jpg' %}") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Quicksand', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .main-layout {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .left-half {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .right-half {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px 30px;
+  }
+
+  .glass-grow-box {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 30px;
+    padding: 50px 40px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+      .glass-grow-box form {
+  text-align: center;
+}
+
+.glass-grow-box button {
+  display: inline-block;
+}
+
+  }
+
+  .glass-grow-box h3 {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+
+  .form-section {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-section label {
+    display: block;
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .form-section input,
+  .form-section select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #fff;
+    color: #000;
+  }
+
+  .submit-btn-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .submit-btn-wrapper button {
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    color: #333;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background 0.3s ease;
+  }
+
+  .submit-btn-wrapper button:hover {
+    background-color: #eaeaea;
+  }
+
+  .glass-box {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border-radius: 20px;
+    padding: 25px;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+  }
+
+  .plant-card {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 15px;
+    padding: 10px;
+    color: #000;
+    text-align: center;
+    height: 100%;
+  }
+
+  .plant-card img {
+    max-height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .alert-card {
+    background-color: #f0fff0;
+    border-left: 5px solid #4caf50;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+</style>
+
+<div class="main-layout">
+  <!-- Sol: Bitki Ekleme -->
+  <div class="left-half">
+    <div class="glass-grow-box">
+      <h3>🌱 Grow Your Garden</h3>
       <form method="POST" action="{% url 'add_user_plant' %}">
-        {% csrf_token %}
-        {{ plant_form.as_p }}
-        <button type="submit" class="btn btn-success mt-2">Add</button>
-      </form>
-    </div>
+  {% csrf_token %}
 
-    <!-- Sağ: Bildirimler + Bitkiler -->
-    <div class="col-md-8">
+  <div class="form-section">
+    <label for="id_plant_type">🌿 Plant type:</label>
+    {{ plant_form.plant_type }}
+  </div>
 
-      <!-- Alerts (sağ üst) -->
-      <div class="mb-4">
-        <h4>🔔 Today's Alerts</h4>
-        <div class="border p-3">
-          {% if alerts %}
-            <ul>
-              {% for alert in alerts %}
-                <li>{{ alert }}</li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p>No alerts for today 💤</p>
-          {% endif %}
-          <a href="{% url 'all_alerts' %}" class="btn btn-outline-primary btn-sm mt-2">View All</a>
-        </div>
-      </div>
+  <div class="form-section">
+    <label for="id_nickname">📝 Nickname:</label>
+    {{ plant_form.nickname }}
+  </div>
 
-      <!-- Plants (sağ alt) -->
-      <div>
-        <h4>🌿 My Plants</h4>
-        <div class="row">
-          {% for plant in plants|slice:":3" %}
-            <div class="col-md-4 mb-3">
-              <div class="card p-2">
-                <h5>{{ plant.nickname }}</h5>
-                <p>{{ plant.plant_type.name }}</p>
-                <p>💧 {{ plant.next_water_date }}</p>
-                <p>🌿 {{ plant.next_fertilize_date }}</p>
-              </div>
-            </div>
-          {% empty %}
-            <p>No plants added.</p>
-          {% endfor %}
-        </div>
-        <a href="{% url 'user_plants' %}" class="btn btn-outline-secondary btn-sm mt-2">View All</a>
-      </div>
+  <div class="form-section">
+    <label for="id_last_watered">💧 Last watered:</label>
+    {{ plant_form.last_watered }}
+  </div>
+
+  <div class="form-section">
+    <label for="id_last_fertilized">🌱 Last fertilized:</label>
+    {{ plant_form.last_fertilized }}
+  </div>
+
+<div class="submit-btn-wrapper">
+  <button type="submit">Add</button>
+</div>
+
+</form>
 
     </div>
   </div>
-</div>
-{% endblock %}
 
-</body>
-</html>
+  <!-- Sağ: Alerts + Plants -->
+  <div class="right-half">
+    <!-- Alerts -->
+    <div class="glass-box">
+      <h4>🔔 Alerts for Today</h4>
+      {% if alerts %}
+        {% for alert in alerts %}
+          <div class="alert-card">{{ alert }}</div>
+        {% endfor %}
+      {% else %}
+        <p>😴 No alerts for today</p>
+      {% endif %}
+      <a href="{% url 'all_alerts' %}" class="btn btn-outline-light btn-sm mt-2">View All</a>
+    </div>
+
+    <!-- Plants -->
+    <div class="glass-box">
+      <h4>🌿 My Plants</h4>
+      <div class="row">
+        {% for plant in plants|slice:":4" %}
+          <div class="col-md-3 mb-3">
+            <div class="plant-card">
+              <img src="{{ plant.image_url|default:'/static/images/logo.png' }}" alt="plant image" class="w-100 mb-2">
+              <h6>{{ plant.nickname }}</h6>
+              <small>{{ plant.plant_type.name }}</small><br>
+              <small>💧 {{ plant.next_water_date }}</small><br>
+              <small>🌿 {{ plant.next_fertilize_date }}</small>
+            </div>
+          </div>
+        {% empty %}
+          <p>No plants added.</p>
+        {% endfor %}
+      </div>
+      <a href="{% url 'user_plants' %}" class="btn btn-outline-light btn-sm mt-2">View All</a>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

@@ -1,41 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
 {% extends 'plants/base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-5">
+<style>
+.back-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #000;
+  border-radius: 10px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #333;
+}
+
+  body {
+    background: url("{% static 'images/green-leaves.jpg' %}") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Quicksand', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .glass-wrapper {
+    margin: 60px auto;
+    max-width: 1200px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 25px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+    color: #fff;
+  }
+
+  .glass-wrapper h3 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+
+  .plant-box {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 18px;
+    padding: 20px;
+    color: #000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+  }
+
+  .plant-box:hover {
+    transform: scale(1.02);
+  }
+
+  .plant-box h5 {
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+
+  .plant-box p {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .plant-box .btn-danger {
+    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+
+  .plant-box a {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+
+<div class="glass-wrapper">
   <h3>🌿 All Your Plants</h3>
   <div class="row">
     {% for plant in plants %}
       <div class="col-md-4 mb-4">
-        <div class="card p-3 shadow-sm">
-            <a href="{% url 'user_plant_detail' plant.pk %}">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">{{ plant.nickname }}</h5>
-                  <p class="card-text">{{ plant.plant_type.name }}</p>
-                </div>
-              </div>
-            </a>
-          <p>💧 Next Water: {{ plant.next_water_date }}</p>
-          <p>🌿 Next Fertilize: {{ plant.next_fertilize_date }}</p>
-          <div class="mt-2">
+        <div class="plant-box">
+          <a href="{% url 'user_plant_detail' plant.pk %}">
+            <h5>{{ plant.nickname }}</h5>
+            <p>{{ plant.plant_type.name }}</p>
+            <p>💧 Next Water: {{ plant.next_water_date }}</p>
+            <p>🌿 Next Fertilize: {{ plant.next_fertilize_date }}</p>
+          </a>
+          <div class="mt-3">
             <a href="{% url 'delete_user_plant' plant.id %}" class="btn btn-sm btn-danger"
                onclick="return confirm('Are you sure?')">Delete</a>
           </div>
         </div>
       </div>
     {% empty %}
-      <p>You don’t have any plants yet!</p>
+      <p class="text-center">You don’t have any plants yet! 🌱</p>
     {% endfor %}
   </div>
 </div>
-{% endblock %}
+    <a href="javascript:history.back()" class="back-btn">← Back</a>
 
-</body>
-</html>
+{% endblock %}

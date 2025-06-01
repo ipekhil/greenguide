@@ -2,50 +2,53 @@ import requests
 from plants.models import PlantType
 
 API_KEY = "sk-YSU368346c483027310667"
-url = f"https://perenual.com/api/species-list?key={API_KEY}&page=1"
+API_URL = f"https://perenual.com/api/species-list?key={API_KEY}&page=1"
 
-response = requests.get(url)
+response = requests.get(API_URL)
+data = response.json()
 
-if response.status_code == 200:
-    data = response.json()
+for plant in data.get("data", []):
+    name = plant.get("common_name") or plant.get("scientific_name")
 
-    for plant in data.get("data", []):
-        name = plant.get("common_name", "Unknown")
-        info = plant.get("description", "") or "No info."
-        watering_text = (plant.get("watering") or "").lower()
-        light_list = plant.get("sunlight", [])
-        light = ", ".join(light_list) if light_list else "Unknown"
+    if not name or PlantType.objects.filter(name=name).exists():
+        continue
 
-        # Sulama → gübreleme frekansını tahmini belirle
-        if "frequent" in watering_text:
-            watering_frequency = 3
-            fertilizing_frequency = 15
-        elif "average" in watering_text:
-            watering_frequency = 7
-            fertilizing_frequency = 30
-        elif "minimum" in watering_text or "low" in watering_text:
-            watering_frequency = 14
-            fertilizing_frequency = 45
+    # Işık tercihi
+    sunlight = plant.get("sunlight", [])
+    if sunlight and isinstance(sunlight, list):
+        if "full_sun" in sunlight:
+            light = "Full Sun"
+        elif "partial_shade" in sunlight:
+            light = "Partial Shade"
+        elif "shade" in sunlight:
+            light = "Shade"
         else:
-            watering_frequency = 10
-            fertilizing_frequency = 30
+            light = "Unknown"
+    else:
+        light = "Unknown"
 
-        ideal_temperature = 20  # API'de olmadığından örnek değer
+    # İsim kontrollü sulama ve gübreleme önerisi
+    lower_name = name.lower() if name else ""
+    if "fir" in lower_name:
+        watering = 10
+        fertilizing = 90
+    elif "maple" in lower_name:
+        watering = 7
+        fertilizing = 60
+    elif "succulent" in lower_name:
+        watering = 14
+        fertilizing = 120
+    else:
+        watering = 7
+        fertilizing = 45
 
-        obj, created = PlantType.objects.get_or_create(
-            name=name,
-            defaults={
-                'info': info,
-                'watering_frequency': watering_frequency,
-                'fertilizing_frequency': fertilizing_frequency,
-                'light_preference': light,
-                'ideal_temperature': ideal_temperature
-            }
-        )
+    PlantType.objects.create(
+        name=name,
+        info=plant.get("description", "") or "No description available.",
+        watering_frequency=watering,
+        fertilizing_frequency=fertilizing,
+        light_preference=light,
+        ideal_temperature= 22
+    )
 
-        if created:
-            print(f"✅ Added: {name}")
-        else:
-            print(f"↪️ Skipped (already exists): {name}")
-else:
-    print("HATA:", response.status_code)
+    print(f"✅ Added: {name}")
