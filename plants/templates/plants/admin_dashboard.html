@@ -1,108 +1,26 @@
 {% extends 'plants/base.html' %}
-{% load static %}
 
 {% block content %}
-<style>
-  body {
-    background: url("{% static 'images/green-leaves.jpg' %}") no-repeat center center fixed;
-    background-size: cover;
-    font-family: 'Quicksand', sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-
-  .admin-dashboard {
-    max-width: 800px;
-    margin: 50px auto;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    color: #fff;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-
-  .admin-dashboard h3 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: 600;
-  }
-
-  .search-box {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .search-box input {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px 15px;
-    border-radius: 10px;
-    border: none;
-    outline: none;
-    font-size: 15px;
-  }
-
-  .plant-list {
-    max-height: 400px;
-    overflow-y: auto;
-  }
-
-  .plant-item {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 15px 20px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .plant-name {
-    font-weight: 500;
-  }
-
-  .plant-actions a {
-    margin-left: 10px;
-    font-size: 14px;
-  }
-</style>
-
-<div class="admin-dashboard">
-  <h3>🌿 Admin Plant Type Panel</h3>
-
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search for a plant..." onkeyup="filterPlants()">
+  <div class="container mt-5">
+    <h3>All Plant Types</h3>
+    <ul class="list-group">
+      {% for plant in plant_types %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ plant.name }}</strong><br>
+            Watering every {{ plant.watering_frequency }} days |
+            Fertilize every {{ plant.fertilizing_frequency }} days |
+            Sunlight: {{ plant.light_preference }} |
+            Temperature: {{ plant.ideal_temperature }} °C
+          </div>
+          <div>
+            <a href="{% url 'edit_plant_type' plant.id %}" class="btn btn-warning btn-sm me-2">Edit</a>
+            <a href="{% url 'delete_plant_type' plant.id %}" class="btn btn-danger btn-sm">Delete</a>
+          </div>
+        </li>
+      {% empty %}
+        <li class="list-group-item">No plant types found.</li>
+      {% endfor %}
+    </ul>
   </div>
-
-  <div class="plant-list" id="plantList">
-    {% for plant in plant_types %}
-      <div class="plant-item">
-        <div class="plant-name">{{ plant.name }}</div>
-        <div class="plant-actions">
-          <a href="{% url 'edit_plant_type' plant.id %}" class="btn btn-sm btn-outline-warning">Edit</a>
-          <a href="{% url 'delete_plant_type' plant.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</a>
-        </div>
-      </div>
-    {% empty %}
-      <p class="text-muted">No plant types found.</p>
-    {% endfor %}
-  </div>
-</div>
-
-<script>
-  function filterPlants() {
-    let input = document.getElementById("searchInput");
-    let filter = input.value.toLowerCase();
-    let list = document.getElementById("plantList");
-    let items = list.getElementsByClassName("plant-item");
-
-    for (let i = 0; i < items.length; i++) {
-      let name = items[i].getElementsByClassName("plant-name")[0].textContent.toLowerCase();
-      items[i].style.display = name.includes(filter) ? "flex" : "none";
-    }
-  }
-</script>
 {% endblock %}

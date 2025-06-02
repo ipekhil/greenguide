@@ -9,12 +9,12 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h3>Edit Plant Type: {{ plant.name }}</h3>
+  <h3>Add a New Plant</h3>
   <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary mt-2">Save Changes</button>
-    <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-2">Cancel</a>
+    <button type="submit" class="btn btn-success">Add</button>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
   </form>
 </div>
 {% endblock %}

@@ -1,118 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
 {% extends 'plants/base.html' %}
-{% load static %}
 
 {% block content %}
-<style>
-.back-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #000;
-  border-radius: 10px;
-  font-weight: 500;
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: all 0.3s ease;
-  z-index: 999;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  color: #333;
-}
-
-  body {
-    background: url("{% static 'images/green-leaves.jpg' %}") no-repeat center center fixed;
-    background-size: cover;
-    font-family: 'Quicksand', sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-
-  .glass-container {
-    max-width: 700px;
-    margin: 40px auto;
-    padding: 25px 30px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(14px);
-    border-radius: 20px;
-    color: #fff;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-  }
-
-  .glass-container h2 {
-    font-size: 24px;
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 25px;
-  }
-
-  .info-section {
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    padding: 10px 15px;
-    margin-bottom: 12px;
-    font-size: 15px;
-  }
-
-  .info-section strong {
-    font-weight: 600;
-    display: inline-block;
-    width: 160px;
-  }
-
-  .btn-danger {
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-weight: 500;
-    font-size: 14px;
-    margin-top: 10px;
-  }
-</style>
-
-<div class="glass-container">
+<div class="container mt-5">
   <h2>{{ plant.nickname }} ({{ plant.plant_type.name }})</h2>
+  <ul class="list-group">
+    <li class="list-group-item">Last Watered: {{ plant.last_watered }}</li>
+    <li class="list-group-item">Next Watering: {{ plant.next_water_date }}</li>
+    <li class="list-group-item">Last Fertilized: {{ plant.last_fertilized }}</li>
+    <li class="list-group-item">Next Fertilizing: {{ plant.next_fertilize_date }}</li>
+  </ul>
 
-  <div class="info-section">
-    <strong>💧 Last Watered:</strong> {{ plant.last_watered }}
-  </div>
-  <div class="info-section">
-    <strong>💧 Next Watering:</strong> {{ plant.next_water_date }}
-  </div>
-  <div class="info-section">
-    <strong>🌿 Last Fertilized:</strong> {{ plant.last_fertilized }}
-  </div>
-  <div class="info-section">
-    <strong>🌿 Next Fertilizing:</strong> {{ plant.next_fertilize_date }}
-  </div>
-
-  <hr style="border-top: 1px solid rgba(255,255,255,0.2); margin: 15px 0;">
-
-  <div class="info-section">
-    <strong>ℹ️ Info:</strong> {{ plant.plant_type.info }}
-  </div>
-  <div class="info-section">
-    <strong>🚿 Watering Freq:</strong> Every {{ plant.plant_type.watering_frequency }} days
-  </div>
-  <div class="info-section">
-    <strong>🧪 Fertilizing Freq:</strong> Every {{ plant.plant_type.fertilizing_frequency }} days
-  </div>
-  <div class="info-section">
-    <strong>☀️ Light:</strong> {{ plant.plant_type.light_preference }}
-  </div>
-  <div class="info-section">
-    <strong>🌡️ Temp:</strong> {{ plant.plant_type.ideal_temperature }} °C
-  </div>
-
-  <div class="text-center">
-    <a href="{% url 'delete_user_plant' plant.pk %}" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete Plant</a>
+  <div class="mt-3">
+    <a href="{% url 'delete_user_plant' plant.pk %}" class="btn btn-danger">Delete</a>
   </div>
 </div>
-    <a href="javascript:history.back()" class="back-btn">← Back</a>
-
 {% endblock %}
+
+</body>
+</html>
