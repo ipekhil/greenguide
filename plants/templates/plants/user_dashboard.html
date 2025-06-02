@@ -161,13 +161,27 @@
   <div class="left-half">
     <div class="glass-grow-box">
       <h3>🌱 Grow Your Garden</h3>
-      <form method="POST" action="{% url 'add_user_plant' %}">
+      <form method="POST" action="{% url 'dashboard' %}">
   {% csrf_token %}
 
   <div class="form-section">
     <label for="id_plant_type">🌿 Plant type:</label>
     {{ plant_form.plant_type }}
   </div>
+{% if plant_form.errors %}
+  <div class="alert-card">
+    <ul>
+      {% for field in plant_form %}
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for error in plant_form.non_field_errors %}
+          <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
 
   <div class="form-section">
     <label for="id_nickname">📝 Nickname:</label>
