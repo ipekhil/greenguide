@@ -1,15 +1,16 @@
-from django.shortcuts import render
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RegisterForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .forms import PlantTypeForm
 from .models import PlantType
-from django.shortcuts import get_object_or_404
 from .forms import UserPlantForm
 from .models import UserPlant
 from datetime import date
+from .utils import send_plant_reminder_email
+from django.core.mail import send_mail
+
 
 
 # Create your views here.
@@ -46,20 +47,47 @@ def dashboard(request):
     else:
         # User dashboard
         user_plants = UserPlant.objects.filter(user=request.user)
+
         today = date.today()
-        alerts = []
 
-        for plant in user_plants:
-            if plant.next_water_date() <= today:
-                alerts.append(f"💧 Water your {plant.nickname} today!")
-            if plant.next_fertilize_date() <= today:
-                alerts.append(f"🌿 Fertilize your {plant.nickname} today!")
+        if request.method == 'POST':
+            form = UserPlantForm(request.POST)
+            if form.is_valid():
+                user_plant = form.save(commit=False)
+                user_plant.user = request.user
+                user_plant.save()
+                if user_plant.next_water_date() <= today:
+                    send_plant_reminder_email(request.user, user_plant, task_type="water")
+                    user_plant.last_reminder_sent = today
+                    user_plant.save()
 
+                elif user_plant.next_fertilize_date() <= today:
+                    send_plant_reminder_email(request.user, user_plant, task_type="fertilize")
+                    user_plant.last_reminder_sent = today
+                    user_plant.save()
+                return redirect('dashboard')
+
+        else:
+            form = UserPlantForm()
+
+        alerts = get_today_alerts(request.user)
         return render(request, "plants/user_dashboard.html", {
             "plants": user_plants,
             "alerts": alerts,
-            "plant_form": UserPlantForm()
+            "plant_form": form
         })
+
+def get_today_alerts(user):
+    today = date.today()
+    alerts = []
+    user_plants = UserPlant.objects.filter(user=user)
+
+    for plant in user_plants:
+        if plant.next_water_date() <= today:
+            alerts.append(f"💧 Water your {plant.nickname} today!")
+        if plant.next_fertilize_date() <= today:
+            alerts.append(f"🌿 Fertilize your {plant.nickname} today!")
+    return alerts
 
 @login_required
 def delete_plant_type(request, id):
@@ -87,21 +115,6 @@ def edit_plant_type(request, plant_id):
         'form': form,
         'plant': plant
     })
-
-@login_required
-def add_user_plant(request):
-    if request.method == 'POST':
-        form = UserPlantForm(request.POST)
-        if form.is_valid():
-            user_plant = form.save(commit=False)
-            user_plant.user = request.user
-            user_plant.save()
-            return redirect('dashboard')
-    else:
-        form = UserPlantForm()
-
-    return render(request, 'plants/add_user_plant.html', {'form': form})
-
 
 @login_required
 def user_plants(request):

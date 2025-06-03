@@ -3,6 +3,13 @@
 
 {% block content %}
 <style>
+.submit-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+
   body {
     background: url("{% static 'images/green-leaves.jpg' %}") no-repeat center center fixed;
     background-size: cover;
@@ -37,42 +44,46 @@
   .glass-grow-box {
     width: 100%;
     max-width: 600px;
-    min-height: 620px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-radius: 30px;
-    padding: 60px 45px 40px;
+    padding: 50px 40px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
     color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    gap: 25px;
+    justify-content: center;
+      .glass-grow-box form {
+  text-align: center;
+}
+
+.glass-grow-box button {
+  display: inline-block;
+}
+
   }
 
   .glass-grow-box h3 {
     text-align: center;
     font-size: 30px;
     font-weight: 600;
-    margin: 0;
-    margin-bottom: 10px;
-    letter-spacing: 0.5px;
+    margin-bottom: 30px;
   }
 
   .form-section {
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    margin-bottom: 20px;
   }
 
   .form-section label {
+    display: block;
     font-weight: 500;
     font-size: 15px;
+    margin-bottom: 6px;
   }
 
   .form-section input,
@@ -83,14 +94,18 @@
     border-radius: 8px;
     border: none;
     outline: none;
-    background: white;
-    color: black;
+    background: #fff;
+    color: #000;
   }
 
-  .glass-grow-box button {
-    align-self: center;
+  .submit-btn-wrapper {
+    display: flex;
+    justify-content: center;
     margin-top: 10px;
-    padding: 10px 30px;
+  }
+
+  .submit-btn-wrapper button {
+    padding: 12px 30px;
     font-size: 16px;
     border-radius: 12px;
     background-color: #ffffff;
@@ -101,14 +116,14 @@
     transition: background 0.3s ease;
   }
 
-  .glass-grow-box button:hover {
+  .submit-btn-wrapper button:hover {
     background-color: #eaeaea;
   }
 
   .glass-box {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     border-radius: 20px;
     padding: 25px;
     color: #fff;
@@ -117,7 +132,7 @@
   }
 
   .plant-card {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.4);
     border-radius: 15px;
     padding: 10px;
     color: #000;
@@ -146,31 +161,49 @@
   <div class="left-half">
     <div class="glass-grow-box">
       <h3>🌱 Grow Your Garden</h3>
-      <form method="POST" action="{% url 'add_user_plant' %}">
-        {% csrf_token %}
+      <form method="POST" action="{% url 'dashboard' %}">
+  {% csrf_token %}
 
-        <div class="form-section">
-          <label for="id_plant_type">🌿 Plant type:</label>
-          {{ plant_form.plant_type }}
-        </div>
+  <div class="form-section">
+    <label for="id_plant_type">🌿 Plant type:</label>
+    {{ plant_form.plant_type }}
+  </div>
+{% if plant_form.errors %}
+  <div class="alert-card">
+    <ul>
+      {% for field in plant_form %}
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for error in plant_form.non_field_errors %}
+          <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
 
-        <div class="form-section">
-          <label for="id_nickname">📝 Nickname:</label>
-          {{ plant_form.nickname }}
-        </div>
+  <div class="form-section">
+    <label for="id_nickname">📝 Nickname:</label>
+    {{ plant_form.nickname }}
+  </div>
 
-        <div class="form-section">
-          <label for="id_last_water_date">💧 Last watered:</label>
-          {{ plant_form.last_water_date }}
-        </div>
+  <div class="form-section">
+    <label for="id_last_watered">💧 Last watered:</label>
+    {{ plant_form.last_watered }}
+  </div>
 
-        <div class="form-section">
-          <label for="id_last_fertilize_date">🌱 Last fertilized:</label>
-          {{ plant_form.last_fertilize_date }}
-        </div>
+  <div class="form-section">
+    <label for="id_last_fertilized">🌱 Last fertilized:</label>
+    {{ plant_form.last_fertilized }}
+  </div>
 
-        <button type="submit">Add</button>
-      </form>
+<div class="submit-btn-wrapper">
+  <button type="submit">Add</button>
+</div>
+
+</form>
+
     </div>
   </div>
 
@@ -211,4 +244,6 @@
     </div>
   </div>
 </div>
+
+
 {% endblock %}

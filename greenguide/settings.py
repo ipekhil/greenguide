@@ -124,6 +124,14 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.greenguide.com.tr'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'info@greenguide.com.tr'
+EMAIL_HOST_PASSWORD = 'Canlarim1.'
+DEFAULT_FROM_EMAIL = 'info@greenguide.com.tr'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

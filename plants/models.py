@@ -22,6 +22,7 @@ class UserPlant(models.Model):
 
     last_watered = models.DateField(default=date.today)
     last_fertilized = models.DateField(default=date.today)
+    last_reminder_sent = models.DateField(null=True, blank=True)
 
     def next_water_date(self):
         expected_date = self.last_watered + timedelta(days=self.plant_type.watering_frequency)
